@@ -23,10 +23,10 @@ class Message(object):
 class Ping(Message):
     def __init__(self):
         super(Ping, self).__init__()
-        pass
+        self.content['type'] = 1 # ping message
 
     def getCode(self):
-        return 1
+        return self.content['type']
 
     def getType(self):
         return 'SERVICE'
@@ -43,9 +43,9 @@ class Ping(Message):
 
 
 class ChatMessage(Message):
-    def __init__(self, from_, to, send_timestamp, receive_timestamp):
+    def __init__(self, from_ = None, to = '', send_timestamp = '', receive_timestamp = ''):
         super(ChatMessage, self).__init__()
-        self.content = {}
+        self.content['type'] = 10 # chat message
         self.content['from'] = from_
         self.content['to'] = to
         self.content['send_timestamp'] = send_timestamp
@@ -53,7 +53,7 @@ class ChatMessage(Message):
 
 
     def getCode(self):
-        return 10
+        return self.content['type']
 
     def getType(self):
         return 'CHAT'
