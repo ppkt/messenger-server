@@ -3,16 +3,15 @@ import json
 
 class Message(object):
     def __init__(self):
-        self.content = dict()
+        self._content = dict()
 
-    def getCode(self):
-        pass
+    @property
+    def content(self):
+        return self._content
 
-    def getType(self):
-        pass
-
-    def getContent(self):
-        pass
+    @content.setter
+    def content(self, value):
+        self._content = value
 
     def decode(self, message):
         pass
@@ -23,20 +22,12 @@ class Message(object):
 class Ping(Message):
     def __init__(self):
         super(Ping, self).__init__()
-        self.content['type'] = 1 # ping message
+        self._content['type'] = 1 # ping message
 
-    def getCode(self):
-        return self.content['type']
-
-    def getType(self):
-        return 'SERVICE'
-
-    def getContent(self):
-        return ''
 
     # Message does not have any content, skip decoding / encoding
     def encode(self):
-        return json.dumps(self.getContent())
+        return json.dumps(self.content)
 
     def decode(self, message):
         pass
@@ -45,21 +36,19 @@ class Ping(Message):
 class ChatMessage(Message):
     def __init__(self, from_ = None, to = '', send_timestamp = '', receive_timestamp = ''):
         super(ChatMessage, self).__init__()
-        self.content['type'] = 10 # chat message
-        self.content['from'] = from_
-        self.content['to'] = to
-        self.content['send_timestamp'] = send_timestamp
-        self.content['receive_timestamp'] = receive_timestamp
+        self._content['type'] = 10 # chat message
+        self._content['from'] = from_
+        self._content['to'] = to
+        self._content['send_timestamp'] = send_timestamp
+        self._content['receive_timestamp'] = receive_timestamp
 
+    @property
+    def content(self):
+        return self._content
 
-    def getCode(self):
-        return self.content['type']
-
-    def getType(self):
-        return 'CHAT'
-
-    def getContent(self):
-        return self.content
+    @content.setter
+    def content(self, value):
+        self._content = value
 
     def encode(self):
         return json.dumps(self.content)

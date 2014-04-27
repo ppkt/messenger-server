@@ -19,7 +19,9 @@ class TestChatMessage(unittest.TestCase):
         newMessage = message.ChatMessage()
         newMessage.decode(text)
 
-        self.assertEqual(newMessage.getContent(), oldMessage.getContent())
+        print text
+
+        self.assertEqual(newMessage.content, oldMessage.content)
 
     def test_encoding_decoding_empty_message(self):
         oldMessage = message.ChatMessage()
@@ -27,7 +29,9 @@ class TestChatMessage(unittest.TestCase):
         newMessage = message.ChatMessage()
         newMessage.decode(text)
 
-        self.assertEqual(newMessage.getContent(), oldMessage.getContent())
+        print text
+
+        self.assertEqual(newMessage.content, oldMessage.content)
 
 
 class TestPingMessage(unittest.TestCase):
@@ -37,4 +41,6 @@ class TestPingMessage(unittest.TestCase):
         newPing = message.Ping()
         newPing.decode(text)
 
-        self.assertEqual(newPing.getContent(), oldPing.getContent())
+        print text
+
+        self.assertEqual(newPing.content, oldPing.content)
