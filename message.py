@@ -1,7 +1,10 @@
 __author__ = 'ppkt'
 import json
+import abc
 
 class Message(object):
+    __metaclass__ = abc.ABCMeta
+
     def __init__(self):
         self._content = dict()
 
@@ -13,22 +16,23 @@ class Message(object):
     def content(self, value):
         self._content = value
 
+    @abc.abstractmethod
     def decode(self, message):
-        pass
+        return
 
+    @abc.abstractmethod
     def encode(self):
-        pass
+        return
 
 class Ping(Message):
     def __init__(self):
         super(Ping, self).__init__()
         self._content['type'] = 1 # ping message
 
-
-    # Message does not have any content, skip decoding / encoding
     def encode(self):
         return json.dumps(self.content)
 
+    # Message does not have any content, skip decoding
     def decode(self, message):
         pass
 
@@ -41,14 +45,6 @@ class ChatMessage(Message):
         self._content['to'] = to
         self._content['send_timestamp'] = send_timestamp
         self._content['receive_timestamp'] = receive_timestamp
-
-    @property
-    def content(self):
-        return self._content
-
-    @content.setter
-    def content(self, value):
-        self._content = value
 
     def encode(self):
         return json.dumps(self.content)

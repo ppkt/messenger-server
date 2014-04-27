@@ -4,7 +4,8 @@ from twisted.internet import reactor
 from twisted.application import internet
 
 from twisted.internet.protocol import Protocol, Factory
-
+from user import User
+from database import Database
 
 class Echo(Protocol):
     # Wrapper for encoding
@@ -25,35 +26,41 @@ class Echo(Protocol):
         self._clientSend(self.transport, "Ping")
 
     def connectionMade(self):
+        self.user = User(self.transport)
+
         # Run heartbeat service
         self.timer.startService()
 
         # Announce new presence
         for client in self.factory.clients:
-            self._clientSend(client, "New user")
+            self._clientSend(client.handler, "New user")
 
         # Add user to roster
-        self.factory.clients.append(self.transport)
+        self.factory.clients.append(self.user)
 
         # Send greeting to user
-        self._clientSend(self.transport, "Hi, currently there are %d clients" % (len(self.factory.clients)))
+        self._clientSend(self.user.handler, "Hi, currently there are %d clients" % (len(self.factory.clients)))
 
     def connectionLost(self, reason):
         # Remove user from roster and send announcement to other users
-        self.factory.clients.remove(self.transport)
+        self.factory.clients.remove(self.user)
         for client in self.factory.clients:
-            self._clientSend(client, "Client left server")
+            self._clientSend(client.handler, "Client left server")
 
     # Send any received data to all clients
     def dataReceived(self, data):
         for client in self.factory.clients:
-            if client != self.transport:
-                self._clientSend(client, data)
+            if client != self.user:
+                self._clientSend(client.handler, data)
             else:
-                self._clientSend(self.transport, "*" + data)
+                self._clientSend(self.user.handler, "*" + data)
 
 class EchoFactory(Factory):
     def __init__(self):
+        # Establish connection with DB
+        self.db = Database()
+        self.db.connect()
+
         # Define list of users
         self.clients = []
 
